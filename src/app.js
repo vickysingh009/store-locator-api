@@ -1,4 +1,5 @@
 const express = require('express');
+const storeRoutes = require('./routes/store.routes');
 const notFound = require('./middleware/not-found');
 const errorHandler = require('./middleware/error-handler');
 
@@ -12,6 +13,8 @@ app.get('/api/health', (req, res) => {
     message: 'Store Locator API is running'
   });
 });
+
+app.use('/api/stores', storeRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
