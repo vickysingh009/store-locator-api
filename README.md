@@ -82,6 +82,20 @@ npm test
 
 Ensure MongoDB is running before starting the application.
 
+### Frontend UI
+
+The repository now includes a minimal React UI (`/client`) for visually demonstrating the REST API endpoints.
+
+To run the frontend:
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+The frontend uses `VITE_API_BASE_URL` (defaulting to `http://localhost:3000`) to connect to the backend. Ensure the backend server is running in a separate terminal.
+
 ## API Endpoints
 
 ### Health Check
