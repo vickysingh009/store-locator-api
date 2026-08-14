@@ -1,5 +1,6 @@
 const Store = require('../models/store.model');
 const AppError = require('../utils/app-error');
+const { lookupZipCode } = require('../services/zip-code.service');
 
 const createStore = async (req, res) => {
   const store = await Store.create(req.validated.body);
@@ -57,4 +58,38 @@ const deleteStore = async (req, res) => {
   });
 };
 
-module.exports = { createStore, getStores, getStoreById, updateStore, deleteStore };
+const getNearbyStores = async (req, res) => {
+  const { zipcode, radius } = req.validated.query;
+
+  const { latitude, longitude } = await lookupZipCode(zipcode);
+
+  const radiusInMeters = radius * 1609.344;
+
+  const stores = await Store.aggregate([
+    {
+      $geoNear: {
+        near: {
+          type: 'Point',
+          coordinates: [longitude, latitude]
+        },
+        distanceField: 'distance',
+        maxDistance: radiusInMeters,
+        distanceMultiplier: 1 / 1609.344,
+        spherical: true
+      }
+    },
+    {
+      $addFields: {
+        distance: { $round: ['$distance', 2] }
+      }
+    }
+  ]);
+
+  res.status(200).json({
+    success: true,
+    count: stores.length,
+    data: stores
+  });
+};
+
+module.exports = { createStore, getStores, getStoreById, updateStore, deleteStore, getNearbyStores };

@@ -35,4 +35,11 @@ const updateStoreSchema = z.object({
   body: storeBodySchema
 });
 
-module.exports = { createStoreSchema, storeIdSchema, updateStoreSchema };
+const nearbyStoreSchema = z.object({
+  query: z.object({
+    zipcode: z.string().trim().regex(/^\d{5}$/, 'ZIP code must contain exactly 5 digits'),
+    radius: z.coerce.number({ invalid_type_error: 'Radius must be numeric' }).positive('Radius must be greater than 0')
+  }).strict()
+});
+
+module.exports = { createStoreSchema, storeIdSchema, updateStoreSchema, nearbyStoreSchema };
