@@ -30,4 +30,31 @@ const getStoreById = async (req, res) => {
   });
 };
 
-module.exports = { createStore, getStores, getStoreById };
+const updateStore = async (req, res) => {
+  const store = await Store.findByIdAndUpdate(
+    req.validated.params.id,
+    req.validated.body,
+    { new: true, runValidators: true }
+  );
+  if (!store) {
+    throw new AppError('Store not found', 404);
+  }
+  res.status(200).json({
+    success: true,
+    message: 'Store updated successfully',
+    data: store
+  });
+};
+
+const deleteStore = async (req, res) => {
+  const store = await Store.findByIdAndDelete(req.validated.params.id);
+  if (!store) {
+    throw new AppError('Store not found', 404);
+  }
+  res.status(200).json({
+    success: true,
+    message: 'Store deleted successfully'
+  });
+};
+
+module.exports = { createStore, getStores, getStoreById, updateStore, deleteStore };

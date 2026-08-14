@@ -30,4 +30,9 @@ const storeIdSchema = z.object({
   })
 });
 
-module.exports = { createStoreSchema, storeIdSchema };
+const updateStoreSchema = z.object({
+  params: storeIdSchema.shape.params,
+  body: storeBodySchema
+});
+
+module.exports = { createStoreSchema, storeIdSchema, updateStoreSchema };
