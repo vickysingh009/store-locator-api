@@ -1,7 +1,6 @@
 const config = require('../config/env');
 
 const errorHandler = (err, req, res, next) => {
-  // Zod validation errors (attached by validate middleware)
   if (err.zodErrors) {
     return res.status(400).json({
       success: false,
@@ -13,7 +12,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Mongoose validation errors
   if (err.name === 'ValidationError' && err.errors) {
     const errors = Object.values(err.errors).map((e) => ({
       field: e.path,
@@ -26,7 +24,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Mongoose cast errors (invalid ObjectId etc.)
   if (err.name === 'CastError') {
     return res.status(400).json({
       success: false,
@@ -34,7 +31,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // MongoDB duplicate key
   if (err.code === 11000) {
     const field = Object.keys(err.keyPattern).join(', ');
     return res.status(409).json({
@@ -43,7 +39,6 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Operational errors (AppError)
   if (err.isOperational) {
     return res.status(err.statusCode).json({
       success: false,
@@ -51,8 +46,7 @@ const errorHandler = (err, req, res, next) => {
     });
   }
 
-  // Unexpected errors
-  console.error('Unexpected error:', err.message);
+  console.error('System error:', err.message);
   const message = config.nodeEnv === 'production' ? 'Internal server error' : err.message;
   res.status(500).json({
     success: false,

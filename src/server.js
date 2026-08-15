@@ -8,17 +8,17 @@ const startServer = async () => {
     await connectDB(config.mongodbUri);
 
     const server = app.listen(config.port, () => {
-      console.log(`Server is running on port ${config.port}`);
+      console.log(`Server started on port ${config.port}`);
     });
 
     const shutdown = async (signal) => {
-      console.log(`${signal} received. Shutting down gracefully...`);
+      console.log(`\nReceived ${signal}, shutting down...`);
 
       server.close(async () => {
-        console.log('HTTP server closed');
+        console.log('Server stopped.');
 
         await mongoose.connection.close();
-        console.log('MongoDB connection closed');
+        console.log('Disconnected from database.');
 
         process.exit(0);
       });
@@ -27,7 +27,7 @@ const startServer = async () => {
     process.on('SIGINT', () => shutdown('SIGINT'));
     process.on('SIGTERM', () => shutdown('SIGTERM'));
   } catch (error) {
-    console.error('Failed to start server:', error.message);
+    console.error('Startup error:', error.message);
     process.exit(1);
   }
 };
